@@ -10,7 +10,7 @@ class MultiTaskModel(nn.Module):
     def __init__(self, embedding_model, classification_model, dropout_rate=0.1):
         super(MultiTaskModel, self).__init__()
         self.embedding_model = embedding_model
-        self.classification_head = classification_model
+        self.classification_head = nn.Linear(768, 3)
         self.dropout = nn.Dropout(dropout_rate)  # Initialize dropout layer
 
     def forward(self, input_ids, attention_mask):
@@ -30,7 +30,10 @@ class MultiTaskModel(nn.Module):
 
         # Pass the pooled embeddings through the classification head
         # Assuming that `classification_head` requires input_ids and attention_mask
-        logits = self.classification_head(input_ids=input_ids, attention_mask=attention_mask).logits 
+        # logits = self.classification_head(input_ids=input_ids, attention_mask=attention_mask).logits 
+        logits = self.classification_head(pooled_output)
+        
+        logits = torch.sigmoid(logits)
 
         return logits
 
